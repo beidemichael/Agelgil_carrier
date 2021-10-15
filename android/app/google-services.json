@@ -1,0 +1,183 @@
+{
+  "project_info": {
+    "project_number": "91022241059",
+    "firebase_url": "https://agelgil-aadaf.firebaseio.com",
+    "project_id": "agelgil-aadaf",
+    "storage_bucket": "agelgil-aadaf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91022241059:android:79102da8999f0e3f10f096",
+        "android_client_info": {
+          "package_name": "com.agelgil.agelgil_carrier_end"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "91022241059-n2gnjco0g2oicegi23pqhrmqm1tt5geq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agelgil.agelgil_carrier_end",
+            "certificate_hash": "2db82823f7cf93240b2b85f8517474a8194d9010"
+          }
+        },
+        {
+          "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNfeGwCn3vq7RITWRkIhB9eZcaIlMvlH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91022241059:android:533cf3199a0c2eef10f096",
+        "android_client_info": {
+          "package_name": "com.agelgil.agelgil_lounge_end"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "91022241059-okk3f7v8muvurf9dcfucfkfmlrqfs0m9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agelgil.agelgil_lounge_end",
+            "certificate_hash": "175cf844990628c2f64dd6639517eb47be76fb3e"
+          }
+        },
+        {
+          "client_id": "91022241059-cnmernaaooq60pghisslfvtifhcobu91.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agelgil.agelgil_lounge_end",
+            "certificate_hash": "2db82823f7cf93240b2b85f8517474a8194d9010"
+          }
+        },
+        {
+          "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNfeGwCn3vq7RITWRkIhB9eZcaIlMvlH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91022241059:android:25ca6dca61411e7310f096",
+        "android_client_info": {
+          "package_name": "com.agelgil.agelgil_user_end"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "91022241059-hqcdstccu4o5fn9e53h057v20qk9pu21.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agelgil.agelgil_user_end",
+            "certificate_hash": "6a6165c23208c87594c3a28af723a4618c4a95e0"
+          }
+        },
+        {
+          "client_id": "91022241059-q35pdmr4du8ak7hka6404tnugb4m22ab.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agelgil.agelgil_user_end",
+            "certificate_hash": "175cf844990628c2f64dd6639517eb47be76fb3e"
+          }
+        },
+        {
+          "client_id": "91022241059-krr0u1ni8is000r5sr5gv2c6i9j1m7e9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agelgil.agelgil_user_end",
+            "certificate_hash": "2db82823f7cf93240b2b85f8517474a8194d9010"
+          }
+        },
+        {
+          "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNfeGwCn3vq7RITWRkIhB9eZcaIlMvlH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91022241059:android:0c095b93b6d2d51d10f096",
+        "android_client_info": {
+          "package_name": "com.example.agelgil_admin_end"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "91022241059-rha6ap75u5mhct2s9adu35a4g5ijjll0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agelgil_admin_end",
+            "certificate_hash": "2db82823f7cf93240b2b85f8517474a8194d9010"
+          }
+        },
+        {
+          "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNfeGwCn3vq7RITWRkIhB9eZcaIlMvlH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "91022241059-vbt12ji8evmt2rblujh217tftmlas2gu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

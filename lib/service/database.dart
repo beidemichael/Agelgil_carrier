@@ -74,6 +74,7 @@ class DatabaseService {
           'phoneNumber': userPhoneNumber,
           'userUid': userUid,
           'verified':false,
+          'lastPaid': Timestamp.now(),
         });
       }
     });

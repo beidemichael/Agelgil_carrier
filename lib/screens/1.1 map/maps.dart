@@ -560,7 +560,7 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
       print("needsVerification = false");
       if (widget.verified == true) {
         print("verified = true");
-        if (widget.taker == true) {
+       
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -577,9 +577,7 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
                       isAuthorized: widget.taker,
                     )),
               ));
-        } else {
-          needsAuthorization();
-        }
+      
       } else {
         loungeNeedsVerification();
       }

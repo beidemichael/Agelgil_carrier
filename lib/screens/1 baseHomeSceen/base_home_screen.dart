@@ -35,7 +35,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
   String userUid = '';
   String userName = '';
   String userPhone = '';
-  String userSex = '';
+  String userSex = ' ';
   String userPic = '';
   String documentId = '';
   bool verified = false;
@@ -53,7 +53,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
   int controllerVersion = 0;
   int netVersion;
   /////////////////////////// App version
-  int appVersion = 26;
+  int appVersion = 32;
   //////////////////////////  App version
 
   @override

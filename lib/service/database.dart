@@ -73,8 +73,7 @@ class DatabaseService {
           'name': name,
           'phoneNumber': userPhoneNumber,
           'userUid': userUid,
-          'verified':false,
-          'lastPaid': Timestamp.now(),
+          'verified': false,
         });
       }
     });
@@ -88,7 +87,7 @@ class DatabaseService {
     });
   }
 
-   Future updateNameandSex(
+  Future updateNameandSex(
     String name,
     String sex,
   ) async {
@@ -97,7 +96,6 @@ class DatabaseService {
       'sex': sex,
     });
   }
-
 
   Future usserInfo() async {
     usersCollection
@@ -145,6 +143,7 @@ class DatabaseService {
           userName: doc.data()['name'] ?? '',
           userSex: doc.data()['sex'] ?? '',
           userPhone: doc.data()['phoneNumber'] ?? '',
+          lastPaid: doc.data()['lastPaid'] ?? 0,
           verified: doc.data()['verified'] ?? false,
           taker: doc.data()['taker'] ?? false,
           documentId: doc.reference.id ?? '');

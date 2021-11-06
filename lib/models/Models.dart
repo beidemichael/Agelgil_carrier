@@ -170,6 +170,7 @@ class UserInfo {
   String documentId;
   bool verified;
   bool taker;
+  var lastPaid;
   UserInfo({
     this.userName,
     this.userPhone,
@@ -179,6 +180,7 @@ class UserInfo {
     this.verified,
     this.userSex,
     this.taker,
+    this.lastPaid,
   });
 }
 

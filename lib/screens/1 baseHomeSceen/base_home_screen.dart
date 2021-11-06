@@ -14,10 +14,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:location/location.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ntp/ntp.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
+import 'not_paid/not_paid.dart';
 
 class BaseHomeScreen extends StatefulWidget {
   @override
@@ -36,6 +40,10 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
   String documentId = '';
   bool verified = false;
   bool taker = false;
+  Timestamp lastPaid = Timestamp(1633096284, 38);
+  Timestamp today;
+  int datedifference;
+  bool dateFinishedCalculating = false;
   GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
   MediaQueryData queryData;
   bool drawerIcon = false;
@@ -51,7 +59,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
   @override
   void initState() {
     super.initState();
-
+    todayDate();
     _getUserLocation();
 
     drawerContoller = AnimationController(
@@ -60,6 +68,14 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
         setState(() {});
       });
     drawerAnimation = Tween<double>(begin: 0, end: 90).animate(drawerContoller);
+  }
+
+  todayDate() async {
+    DateTime startDate = await NTP.now(); // Datetime
+    today = Timestamp.fromDate(startDate); // From Datetime to Timestamp
+    setState(() {
+      dateFinishedCalculating = true;
+    });
   }
 
   drawerState() {
@@ -106,10 +122,10 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
 
     _locationData = await location.getLocation();
 
-      // Position  position = await Geolocator.getCurrentPosition(
-      //       desiredAccuracy: LocationAccuracy.medium,
-      //       forceAndroidLocationManager: true)
-      //   .timeout(Duration(seconds: 3));
+    // Position  position = await Geolocator.getCurrentPosition(
+    //       desiredAccuracy: LocationAccuracy.medium,
+    //       forceAndroidLocationManager: true)
+    //   .timeout(Duration(seconds: 3));
 
     myLocation = LatLng(_locationData.latitude, _locationData.longitude);
     print('location optainerd');
@@ -122,8 +138,6 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
     }).catchError((e) {
       print(e);
     });
-
-
   }
 
   // screenStarter() {
@@ -146,6 +160,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
         userUid = userInfo[0].userUid;
         documentId = userInfo[0].documentId;
         verified = userInfo[0].verified;
+        lastPaid = userInfo[0].lastPaid;
         taker = userInfo[0].taker;
       }
     }
@@ -154,6 +169,12 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
         controllerVersion = controllerInfo[0].version;
       }
     }
+
+    if (dateFinishedCalculating == true) {
+      datedifference =
+          today.microsecondsSinceEpoch - lastPaid.microsecondsSinceEpoch;
+    }
+
     netVersion = controllerVersion - appVersion;
 
     return WillPopScope(
@@ -229,7 +250,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
                         userPhone: userPhone,
                         userPic: userPic,
                         verified: verified,
-                        taker:taker,
+                        taker: taker,
                         location: _getUserLocation,
                         position: myLocation,
                         netVersion: netVersion,
@@ -245,6 +266,11 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
               child: ForcedName(
                 userUid: userUid,
               ),
+            ),
+            Visibility(
+              visible: dateFinishedCalculating == true &&
+                  datedifference > 604800000000,
+              child: NotPaid(),
             ),
           ],
         ),

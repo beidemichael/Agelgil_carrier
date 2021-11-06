@@ -92,7 +92,6 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
     //Notification when there is new order
     await firebaseMessaging.subscribeToTopic('OrderNotification');
   }
-  
 
   void getAdrashSub() async {
     //Broadcast notification for adrashes only
@@ -536,7 +535,31 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
   loungeDetailActivator(
       BuildContext context, String loungeId, bool needsVerification) {
     if (needsVerification == true) {
+      print("needsVerification = true");
+      if (widget.taker == true) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => StreamProvider<List<Orders>>.value(
+                  value: DatabaseService(loungeId: loungeId).ordersDetail,
+                  child: OrdersScreen(
+                    lat: _initialPosition.latitude,
+                    long: _initialPosition.longitude,
+                    userName: widget.userName,
+                    userPhone: widget.userPhone,
+                    verified: widget.verified,
+                    userPic: widget.userPic,
+                    userUid: widget.userUid,
+                    isAuthorized: widget.taker,
+                  )),
+            ));
+      } else {
+        needsAuthorization();
+      }
+    } else {
+      print("needsVerification = false");
       if (widget.verified == true) {
+        print("verified = true");
         if (widget.taker == true) {
           Navigator.push(
               context,
@@ -560,23 +583,6 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
       } else {
         loungeNeedsVerification();
       }
-    } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => StreamProvider<List<Orders>>.value(
-                value: DatabaseService(loungeId: loungeId).ordersDetail,
-                child: OrdersScreen(
-                  lat: _initialPosition.latitude,
-                  long: _initialPosition.longitude,
-                  userName: widget.userName,
-                  userPhone: widget.userPhone,
-                  verified: widget.verified,
-                  userPic: widget.userPic,
-                  userUid: widget.userUid,
-                  isAuthorized: false,
-                )),
-          ));
     }
   }
 

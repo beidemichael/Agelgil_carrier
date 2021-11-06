@@ -51,7 +51,7 @@ class _WrapperState extends State<Wrapper> {
                       StreamProvider<List<UserInfo>>.value(
                         value: DatabaseService(userUid: user.uid).userInfo,
                       ),
-                      StreamProvider<Li st<Controller>>.value(
+                      StreamProvider<List<Controller>>.value(
                         value: DatabaseService().controllerInfo,
                       ),
                     ],

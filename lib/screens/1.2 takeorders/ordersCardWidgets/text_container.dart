@@ -1,16 +1,20 @@
+import 'dart:ui';
+
 import 'package:agelgil_carrier_end/models/Models.dart';
 import 'package:agelgil_carrier_end/screens/1.1%20map/camera_ask.dart';
 import 'package:agelgil_carrier_end/screens/1.2%20takeorders/alert/failed.dart';
 import 'package:agelgil_carrier_end/screens/1.2%20takeorders/alert/order_is_taken.dart';
 import 'package:agelgil_carrier_end/screens/1.2%20takeorders/alert/sucessful.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:agelgil_carrier_end/service/database.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:ntp/ntp.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:time_formatter/time_formatter.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
@@ -48,6 +52,7 @@ class _TextsAndContentState extends State<TextsAndContent> {
   double deslat;
   double deslong;
   LatLng _initialPosition;
+  bool orderNotTaken = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -70,28 +75,58 @@ class _TextsAndContentState extends State<TextsAndContent> {
         position.longitude);
   }
 
-  checkQRcode() async {
-    if (widget.orders.isTaken == true) {
-      //order is taken by another carrier.
-      orderIsTaken(context);
-    } else {
-      var cameraScanResult = await scanner.scan();
+  // checkQRcode() async {
+  //   if (widget.orders.isTaken == true) {
+  //     //order is taken by another carrier.
+  //     orderIsTaken(context);
+  //   } else {
+  //     var cameraScanResult = await scanner.scan();
 
-      if (cameraScanResult == widget.orders.loungeOrderNumber||cameraScanResult == widget.orders.loungeId ) {
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        DatabaseService(id: widget.orders.documentId).updateOrderWithCarriers(
-            widget.userName,
-            widget.userPhone,
-            widget.userUid,
-            widget.userPic,
-            position.latitude,
-            position.longitude);
-        deliverySuccessful(context);
-      } else {
-        deliveryFailed(context);
+  //     if (cameraScanResult == widget.orders.loungeOrderNumber||cameraScanResult == widget.orders.loungeId ) {
+  //       Position position = await Geolocator.getCurrentPosition(
+  //           desiredAccuracy: LocationAccuracy.high);
+  //       DatabaseService(id: widget.orders.documentId).updateOrderWithCarriers(
+  //           widget.userName,
+  //           widget.userPhone,
+  //           widget.userUid,
+  //           widget.userPic,
+  //           position.latitude,
+  //           position.longitude);
+  //       deliverySuccessful(context);
+  //     } else {
+  //       deliveryFailed(context);
+  //     }
+  //   }
+  // }
+  checkIfTaken(String documentUid) async {
+    setState(() {
+      orderNotTaken = true;
+    });
+    DateTime checkInternetConnection = await NTP.now();
+    await FirebaseFirestore.instance
+        .collection('Orders')
+        .doc(documentUid)
+        .get()
+        .then((docs) async {
+      if (docs != null) {
+        if (docs.data()['isTaken'] == false) {
+          Position position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high);
+          DatabaseService(id: widget.orders.documentId).updateOrderWithCarriers(
+              widget.userName,
+              widget.userPhone,
+              widget.userUid,
+              widget.userPic,
+              position.latitude,
+              position.longitude);
+        } else {
+          orderIsTaken(context);
+        }
       }
-    }
+    });
+    setState(() {
+      orderNotTaken = false;
+    });
   }
 
   orderIsTaken(BuildContext context) {
@@ -129,152 +164,155 @@ class _TextsAndContentState extends State<TextsAndContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        // SizedBox(height: 25),
+    return Stack(
+      children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Container(
-                height: 48,
-                width: MediaQuery.of(context).size.width,
-                // color: Colors.green[200],
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text('Delivery fee ',
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.w300)),
-                      Text(
-                          widget.orders.deliveryFee.toInt().toString() + "Birr",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey[700],
-                              fontWeight: FontWeight.w500)),
-                    ],
+          children: <Widget>[
+            // SizedBox(height: 25),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Container(
+                    height: 48,
+                    width: MediaQuery.of(context).size.width,
+                    // color: Colors.green[200],
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Delivery fee ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.w300)),
+                          Text(
+                              widget.orders.deliveryFee.toInt().toString() +
+                                  "Birr",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.grey[700],
+                                  fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 18),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    height: 25,
-                    // color: Colors.yellow[50],
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Tip',
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey[500],
-                                fontWeight: FontWeight.w300)),
-                        Text(widget.orders.tip.toString() + "Birr",
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.grey[700],
-                                fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 13),
-                  Container(
-                    height: 25,
-                    // color: Colors.yellow[50],
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Orderd items',
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey[500],
-                                fontWeight: FontWeight.w300)),
-                        Text(widget.orders.quantity.length.toString(),
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.grey[700],
-                                fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    height: 25,
-                    // color: Colors.blue[200],
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Cost',
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey[500],
-                                fontWeight: FontWeight.w300)),
-                        Text(
-                            (widget.orders.subTotal +
-                                        widget.orders.serviceCharge)
-                                    .toString() +
-                                ' Birr',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.grey[700],
-                                fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
             SizedBox(height: 18),
-            Container(
-              // color: Colors.red,
-              width: MediaQuery.of(context).size.width,
-              height: 25,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Center(
-                  child: Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text('Distance:     ',
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey[500],
-                              fontWeight: FontWeight.w300)),
-                      Text(widget.orders.distance.toStringAsFixed(2) + 'Km',
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey[800],
-                              fontWeight: FontWeight.w300)),
+                      Container(
+                        height: 25,
+                        // color: Colors.yellow[50],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Tip',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey[500],
+                                    fontWeight: FontWeight.w300)),
+                            Text(widget.orders.tip.toString() + "Birr",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.grey[700],
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 13),
+                      Container(
+                        height: 25,
+                        // color: Colors.yellow[50],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Orderd items',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey[500],
+                                    fontWeight: FontWeight.w300)),
+                            Text(widget.orders.quantity.length.toString(),
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.grey[700],
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        height: 25,
+                        // color: Colors.blue[200],
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Cost',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.grey[500],
+                                    fontWeight: FontWeight.w300)),
+                            Text(
+                                (widget.orders.subTotal +
+                                            widget.orders.serviceCharge)
+                                        .toString() +
+                                    ' Birr',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.grey[700],
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: 40),
-            InkWell(
-              onTap: () async {
-                if (widget.isAuthorized == true) {
-                  takeOrder();
-                } else {
-                  takeOrder();
+                SizedBox(height: 18),
+                Container(
+                  // color: Colors.red,
+                  width: MediaQuery.of(context).size.width,
+                  height: 25,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Distance:     ',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[500],
+                                  fontWeight: FontWeight.w300)),
+                          Text(widget.orders.distance.toStringAsFixed(2) + 'Km',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.grey[800],
+                                  fontWeight: FontWeight.w300)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 40),
+                InkWell(
+                  onTap: () async {
+                    if (widget.isAuthorized == true) {
+                      checkIfTaken(widget.orders.documentId);
+                    } else {
+                      checkIfTaken(widget.orders.documentId);
 //                   var status = await Permission.camera.status;
 //                   if (status.isGranted) {
 //                     // We didn't ask for permission yet or the permission has been denied before but not permanently.
@@ -324,66 +362,82 @@ class _TextsAndContentState extends State<TextsAndContent> {
 //                   if (await Permission.location.isRestricted) {
 //                     // The OS restricts access, for example because of parental controls.
 //                   }
-                }
-              },
-              child: Center(
-                child: Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20.0),
-                        topLeft: Radius.circular(20.0),
-                        bottomLeft: Radius.circular(20.0),
-                        bottomRight: Radius.circular(20.0),
-                      ),
-                      color: widget.orders.isTaken == false
-                          ? Colors.orange[500]
-                          : Colors.grey[500]),
+                    }
+                  },
                   child: Center(
-                    child: widget.isAuthorized == true
-                        ? Text('PICK',
-                            style: TextStyle(
-                                fontSize: 25,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600))
-                        : Text('PICK',
-                            style: TextStyle(
-                                fontSize: 25,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600)),
+                    child: Container(
+                      height: 50,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(20.0),
+                            topLeft: Radius.circular(20.0),
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0),
+                          ),
+                          color: widget.orders.isTaken == false
+                              ? Colors.orange[500]
+                              : Colors.grey[500]),
+                      child: Center(
+                          child: orderNotTaken == true
+                              ? Center(
+                                  child: SpinKitCircle(
+                                  color: Colors.white,
+                                  size: 30.0,
+                                ))
+                              : Text('PICK',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600))),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: 3),
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: widget.loading == true
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 6.0),
-                        child: LinearProgressIndicator(
-                          backgroundColor: Colors.orange,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.grey[300],
+                SizedBox(height: 3),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: widget.loading == true
+                      ? Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 6.0),
+                            child: LinearProgressIndicator(
+                              backgroundColor: Colors.orange,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.grey[300],
+                              ),
+                              value: 0.8,
+                            ),
                           ),
-                          value: 0.8,
-                        ),
-                      ),
-                    )
-                  : Text(
-                      convertTimeStampp(
-                              widget.orders.created.millisecondsSinceEpoch)
-                          .toString(),
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[400],
-                          fontWeight: FontWeight.w500)),
+                        )
+                      : Text(
+                          convertTimeStampp(
+                                  widget.orders.created.millisecondsSinceEpoch)
+                              .toString(),
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[400],
+                              fontWeight: FontWeight.w500)),
+                ),
+              ],
             ),
           ],
         ),
+        // Positioned(
+        //   child: Visibility(
+        //     visible: orderNotTaken,
+        //     child: Center(
+        //       child: BackdropFilter(
+        //         filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        //         child: Center(
+        //             child: SpinKitCircle(
+        //           color: Colors.orange,
+        //           size: 50.0,
+        //         )),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

@@ -5,6 +5,7 @@ import 'package:agelgil_carrier_end/models/Models.dart';
 import 'package:agelgil_carrier_end/screens/1%20baseHomeSceen/update/optional_update.dart';
 import 'package:agelgil_carrier_end/screens/1.2%20takeorders/order_screen.dart';
 import 'package:agelgil_carrier_end/screens/2%20takenOrders/takenOrdersUi/my_orders_screen.dart';
+import 'package:agelgil_carrier_end/screens/3%20complete%20orders/complete_orders.dart';
 import 'package:agelgil_carrier_end/service/database.dart';
 import 'package:agelgil_carrier_end/shared/loading.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -21,7 +22,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-import 'package:agelgil_carrier_end/screens/3 complete orders/complete_orders.dart';
+
 import 'package:vibration/vibration.dart';
 
 import 'NotAuthorizedMessage.dart';
@@ -34,6 +35,7 @@ class Maps extends StatefulWidget {
   String userName;
   String userPhone;
   String userPic;
+  var userLastPaid;
   LatLng position;
   Function location;
   Function orderConfirmed;
@@ -49,6 +51,7 @@ class Maps extends StatefulWidget {
     this.orderConfirmed,
     this.netVersion,
     this.taker,
+    this.userLastPaid,
   });
   @override
   _MapsState createState() => _MapsState();
@@ -560,24 +563,23 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
       print("needsVerification = false");
       if (widget.verified == true) {
         print("verified = true");
-       
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => StreamProvider<List<Orders>>.value(
-                    value: DatabaseService(loungeId: loungeId).ordersDetail,
-                    child: OrdersScreen(
-                      lat: _initialPosition.latitude,
-                      long: _initialPosition.longitude,
-                      userName: widget.userName,
-                      userPhone: widget.userPhone,
-                      verified: widget.verified,
-                      userPic: widget.userPic,
-                      userUid: widget.userUid,
-                      isAuthorized: widget.taker,
-                    )),
-              ));
-      
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => StreamProvider<List<Orders>>.value(
+                  value: DatabaseService(loungeId: loungeId).ordersDetail,
+                  child: OrdersScreen(
+                    lat: _initialPosition.latitude,
+                    long: _initialPosition.longitude,
+                    userName: widget.userName,
+                    userPhone: widget.userPhone,
+                    verified: widget.verified,
+                    userPic: widget.userPic,
+                    userUid: widget.userUid,
+                    isAuthorized: widget.taker,
+                  )),
+            ));
       } else {
         loungeNeedsVerification();
       }
@@ -851,6 +853,7 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
   }
 
   CompleteOrderss() {
+    print(widget.userLastPaid);
     return Stack(
       children: <Widget>[
         Positioned(
@@ -871,11 +874,14 @@ class _MapsState extends State<Maps> with TickerProviderStateMixin {
                             //       .orders,
                             // ),
                             StreamProvider<List<Orders>>.value(
-                              value: DatabaseService(userUid: widget.userUid)
-                                  .completeOrders,
+                              value: DatabaseService(
+                                      userUid: widget.userUid,
+                                      carrierLastPaid: widget.userLastPaid)
+                                  .adrashFromLastPaidProgress,
                             ),
                           ],
-                          child: CompleteOrders(),
+                          child:
+                              AdrashCompleteOrders(carrierUid: widget.userUid),
                         ),
                       ));
 

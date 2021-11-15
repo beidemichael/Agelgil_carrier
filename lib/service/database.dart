@@ -12,17 +12,20 @@ class DatabaseService {
   String userPhoneNumber;
   double latitude;
   double longitude;
+  var carrierLastPaid;
 
-  DatabaseService(
-      {this.menuId,
-      this.userPhoneNumber,
-      this.userUid,
-      this.id,
-      this.created,
-      this.orderNumber,
-      this.latitude,
-      this.longitude,
-      this.loungeId});
+  DatabaseService({
+    this.menuId,
+    this.userPhoneNumber,
+    this.userUid,
+    this.id,
+    this.created,
+    this.orderNumber,
+    this.latitude,
+    this.longitude,
+    this.loungeId,
+    this.carrierLastPaid,
+  });
 //collecton reference
   final CollectionReference loungesCollection =
       FirebaseFirestore.instance.collection('Lounges');
@@ -146,6 +149,7 @@ class DatabaseService {
           lastPaid: doc.data()['lastPaid'] ?? 0,
           verified: doc.data()['verified'] ?? false,
           taker: doc.data()['taker'] ?? false,
+          userLastPaid: doc.data()['lastPaid'] ?? Timestamp.now(),
           documentId: doc.reference.id ?? '');
     }).toList();
   }
@@ -361,6 +365,19 @@ class DatabaseService {
         .where('isTaken', isEqualTo: true)
         // .where('isPaid', isEqualTo: false)
         .where('carrierUserUid', isEqualTo: userUid)
+        .orderBy('created', descending: true)
+        .snapshots()
+        .map(_ordersListFromSnapshot);
+  }
+
+  Stream<List<Orders>> get adrashFromLastPaidProgress {
+    return orderCollection
+        .where('isDelivered', isEqualTo: true)
+        .where('isTaken', isEqualTo: true)
+        // .where('isPaid', isEqualTo: false)
+        .where('carrierUserUid', isEqualTo: userUid)
+        .where('deliveryTime', isGreaterThan: carrierLastPaid)
+        .orderBy('deliveryTime', descending: true)
         .orderBy('created', descending: true)
         .snapshots()
         .map(_ordersListFromSnapshot);

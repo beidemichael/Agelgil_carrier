@@ -38,6 +38,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
   String userSex = ' ';
   String userPic = '';
   String documentId = '';
+  var userLastPaid =  Timestamp.now();
   bool verified = false;
   bool taker = false;
   Timestamp lastPaid = Timestamp(1633096284, 38);
@@ -158,6 +159,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
         userPhone = userInfo[0].userPhone;
         userPic = userInfo[0].userPic;
         userUid = userInfo[0].userUid;
+        userLastPaid = userInfo[0].userLastPaid;
         documentId = userInfo[0].documentId;
         verified = userInfo[0].verified;
         lastPaid = userInfo[0].lastPaid;
@@ -245,16 +247,16 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
                         ),
                       ],
                       child: Maps(
-                        userUid: userUid,
-                        userName: userName,
-                        userPhone: userPhone,
-                        userPic: userPic,
-                        verified: verified,
-                        taker: taker,
-                        location: _getUserLocation,
-                        position: myLocation,
-                        netVersion: netVersion,
-                      ),
+                          userUid: userUid,
+                          userName: userName,
+                          userPhone: userPhone,
+                          userPic: userPic,
+                          verified: verified,
+                          taker: taker,
+                          location: _getUserLocation,
+                          position: myLocation,
+                          netVersion: netVersion,
+                          userLastPaid: userLastPaid),
                     ),
                   ),
             Visibility(

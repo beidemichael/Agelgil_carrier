@@ -167,6 +167,7 @@ class UserInfo {
   String userPic;
   String userUid;
   String userSex;
+  var userLastPaid;
   String documentId;
   bool verified;
   bool taker;
@@ -181,6 +182,7 @@ class UserInfo {
     this.userSex,
     this.taker,
     this.lastPaid,
+    this.userLastPaid
   });
 }
 

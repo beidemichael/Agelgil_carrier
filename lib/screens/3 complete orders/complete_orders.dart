@@ -1,26 +1,28 @@
 import 'dart:async';
 import 'package:agelgil_carrier_end/models/Models.dart';
+import 'package:agelgil_carrier_end/screens/3%20complete%20orders/total_complete_orders.dart';
+import 'package:agelgil_carrier_end/service/database.dart';
 import 'package:agelgil_carrier_end/shared/background_blur.dart';
 import 'package:agelgil_carrier_end/shared/internet_connection.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-
 import 'complete_my_orders_card.dart';
 
-class CompleteOrders extends StatefulWidget {
-  // List<Orders> completeOrders;
-  // CompleteOrders({this.completeOrders});
+class AdrashCompleteOrders extends StatefulWidget {
+  String carrierUid;
+  AdrashCompleteOrders({this.carrierUid});
   @override
-  _CompleteOrdersState createState() => _CompleteOrdersState();
+  _AdrashCompleteOrdersState createState() => _AdrashCompleteOrdersState();
 }
 
-class _CompleteOrdersState extends State<CompleteOrders> {
+class _AdrashCompleteOrdersState extends State<AdrashCompleteOrders> {
   StreamSubscription subscription;
   bool isInternetConnected = true;
   double total;
   double totalNo;
+  num serviceCharge = 0;
   List<Orders> completeOrders;
   @override
   void initState() {
@@ -48,6 +50,7 @@ class _CompleteOrdersState extends State<CompleteOrders> {
     for (int i = 0; i < completeOrders.length; i++) {
       total = total + completeOrders[i].deliveryFee;
       totalNo = totalNo + 1;
+      serviceCharge = serviceCharge + completeOrders[i].serviceCharge;
     }
   }
 
@@ -66,7 +69,7 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                 children: [
                   Container(
                     // color: Colors.green,
-                    height: MediaQuery.of(context).size.height - 130,
+                    height: MediaQuery.of(context).size.height - 150,
                     width: MediaQuery.of(context).size.width,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 90.0),
@@ -101,7 +104,7 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                   Padding(
                     padding: EdgeInsets.only(left: 10.0, right: 10, bottom: 10),
                     child: Container(
-                      height: 120.0,
+                      height: 140.0,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                         boxShadow: [
@@ -139,7 +142,7 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                                           fontSize: 18.0,
                                           color: Colors.grey[500],
                                         )),
-                                    Text(total.toStringAsFixed(2) + 'Birr',
+                                    Text(total.toString() + 'Birr',
                                         style: TextStyle(
                                           fontSize: 20.0,
                                           fontWeight: FontWeight.bold,
@@ -165,6 +168,26 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                                         )),
                                   ],
                                 ),
+                                SizedBox(height: 10.0),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text('Service charge',
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          color: Colors.grey[500],
+                                        )),
+                                    Text(
+                                        serviceCharge.toStringAsFixed(2) +
+                                            'Birr',
+                                        style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey[700],
+                                        )),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -182,13 +205,13 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
                     padding:
-                        const EdgeInsets.only(top: 18.0, left: 10, right: 10),
+                        const EdgeInsets.only(top: 23.0, left: 10, right: 10),
                     child: Center(
                       child: Text(
-                        'Complete orders',
+                        'Unpaid Complete orders',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22.0,
+                            fontSize: 18.0,
                             color: Colors.grey[600]
                             // fontWeight: FontWeight.w700,
                             // fontStyle: FontStyle.italic,
@@ -216,6 +239,67 @@ class _CompleteOrdersState extends State<CompleteOrders> {
                 ),
               ),
             ],
+          ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MultiProvider(
+                        providers: [
+                          StreamProvider<List<Orders>>.value(
+                            value:  DatabaseService(userUid: widget.carrierUid)
+                                .completeOrders,
+                          ),
+                        ],
+                        child: TotalAdrashCompleteOrders(),
+                      ),
+                    ));
+              },
+              child: Container(
+                height: 80,
+                width: 50,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Total',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          fontSize: 15.0,
+                          color: Colors.grey[800]
+                          // fontWeight: FontWeight.w700,
+                          // fontStyle: FontStyle.italic,
+                          ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    )
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0)),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey[400],
+                      blurRadius: 5.0, //effect of softening the shadow
+                      spreadRadius: 0.5, //effecet of extending the shadow
+                      offset: Offset(
+                          8.0, //horizontal
+                          10.0 //vertical
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           Positioned(
             bottom: 0,

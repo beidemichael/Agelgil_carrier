@@ -54,7 +54,7 @@ class _BaseHomeScreenState extends State<BaseHomeScreen>
   int controllerVersion = 0;
   int netVersion;
   /////////////////////////// App version
-  int appVersion = 37;
+  int appVersion = 38;
   //////////////////////////  App version
 
   @override

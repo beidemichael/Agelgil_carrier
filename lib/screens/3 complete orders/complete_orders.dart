@@ -57,7 +57,6 @@ class _AdrashCompleteOrdersState extends State<AdrashCompleteOrders> {
   @override
   Widget build(BuildContext context) {
     final completeOrders = Provider.of<List<Orders>>(context) ?? [];
-    print(completeOrders);
     totalCalculation(completeOrders);
     return Scaffold(
       body: Stack(

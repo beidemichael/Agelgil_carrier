@@ -146,7 +146,7 @@ class DatabaseService {
           userName: doc.data()['name'] ?? '',
           userSex: doc.data()['sex'] ?? '',
           userPhone: doc.data()['phoneNumber'] ?? '',
-          lastPaid: doc.data()['lastPaid'] ?? 0,
+          lastPaid: doc.data()['lastPaid'] ?? Timestamp.now(),
           verified: doc.data()['verified'] ?? false,
           taker: doc.data()['taker'] ?? false,
           userLastPaid: doc.data()['lastPaid'] ?? Timestamp.now(),
